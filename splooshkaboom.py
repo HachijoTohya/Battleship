@@ -97,7 +97,6 @@ class GameState:
                 draw_game_screen()
 
     def win_lose(self, win_or_lose):
-        shots = 0
         reset_game()
         for event in pygame.event.get():
             if event.type == pygame.QUIT or event.type == pygame.KEYDOWN:
