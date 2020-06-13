@@ -349,25 +349,23 @@ def main():
                 pygame.event.clear()
                 draw_game_screen()
                 pygame.display.update()
-            # Switch game state into end game
-        shots = 0
-        clock.tick_busy_loop(144)
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT or event.type == pygame.KEYDOWN:
-                sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                pygame.event.clear()
-                for state in end_states:
-                    state.off()
-                    playing.on()
-            for state in end_states:
-                if state.state and state == victory:
+        # Switch game state into end game
+        while victory.state or lose.state:
+            shots = 0
+            clock.tick_busy_loop(144)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT or event.type == pygame.KEYDOWN:
+                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    pygame.event.clear()
+                    for state in end_states:
+                        state.off()
+                        playing.on()
+                if victory.state:
                     draw_win_screen()
-                    pygame.display.update()
-                elif state.state and state == lose:
+                elif lose.state:
                     draw_lose_screen()
-                    pygame.display.update()
-
+                pygame.display.update()
 
 
 main()
