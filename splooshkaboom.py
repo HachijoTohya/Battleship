@@ -8,7 +8,7 @@ window = pygame.display.set_mode((1600, 900))
 pygame.display.set_caption("Sploosh Kaboom")
 clock = pygame.time.Clock()
 font = pygame.font.SysFont("arial", 98, False, False)
-colors = {"red": (255, 0, 0), "green": (0, 255, 0), "blue": (0, 0, 255)}
+colors = {"red": (255, 0, 0), "green": (0, 255, 0), "blue": (0, 0, 255), "white": (255, 255, 255)}
 
 
 # menu items
@@ -123,9 +123,9 @@ class Bombs:
     def draw_bomb(self):
         pygame.draw.rect(window, colors["blue"], (self.location, bomb.dims))
         if self.spent:
-            pygame.draw.line(window, (255, 255, 255), self.location,
+            pygame.draw.line(window, colors["white"], self.location,
                              (self.location[0] + bomb.dims[0], self.location[1] + bomb.dims[1]))
-            pygame.draw.line(window, (255, 255, 255), (self.location[0] + bomb.dims[0], self.location[1]),
+            pygame.draw.line(window, colors["white"], (self.location[0] + bomb.dims[0], self.location[1]),
                              (self.location[0], self.location[1] + bomb.dims[1]))
 
     def reset_bomb(self):
@@ -155,12 +155,12 @@ class Squids:
 
     def draw_squid_icon(self, icon_location):
         pygame.draw.rect(window, (255, 0, 0), (enemies.set_location((1388, icon_location)), enemies.dims))
-        window.blit(enemy_label.render(f"{self.size}", True, (255, 255, 255)),
+        window.blit(enemy_label.render(f"{self.size}", True, colors["white"]),
                     (enemies.location[0] + 25, enemies.location[1] - 6))
         if self.is_dead:
-            pygame.draw.line(window, (255, 255, 255), enemies.location,
+            pygame.draw.line(window, colors["white"], enemies.location,
                              (enemies.location[0] + enemies.dims[0], enemies.location[1] + enemies.dims[1]-1), 2)
-            pygame.draw.line(window, (255, 255, 255), (enemies.location[0] + enemies.dims[0], enemies.location[1]),
+            pygame.draw.line(window, colors["white"], (enemies.location[0] + enemies.dims[0], enemies.location[1]),
                              (enemies.location[0], enemies.location[1] + enemies.dims[1]-1), 2)
 
     def can_spawn(self, conditions):
@@ -239,9 +239,9 @@ def scan(space, direction, distance):
 # Draws game
 def draw_lose_screen():
     window.fill((0, 0, 0))
-    click = font.render("Click anywhere to play again", True, (255, 255, 255))
-    click2 = font.render("or press any key to exit.", True, (255, 255, 255))
-    loss_text = font.render("You Lose!", True, (255, 255, 255))
+    click = font.render("Click anywhere to play again", True, colors["white"])
+    click2 = font.render("or press any key to exit.", True, colors["white"])
+    loss_text = font.render("You Lose!", True, colors["white"])
     window.blit(loss_text, (window.get_width()/2 - loss_text.get_width()/2, 250))
     window.blit(click2, (window.get_width()/2 - click2.get_width()/2, 450))
     window.blit(click, (window.get_width()/2 - click.get_width()/2, 350))
@@ -249,9 +249,9 @@ def draw_lose_screen():
 
 def draw_win_screen():
     window.fill((0, 0, 0))
-    win_txt = font.render("You killed all the squids!", True, (255, 255, 255))
-    click = font.render("Click anywhere to play again", True, (255, 255, 255))
-    click2 = font.render("or press any key to exit.", True, (255, 255, 255))
+    win_txt = font.render("You killed all the squids!", True, colors["white"])
+    click = font.render("Click anywhere to play again", True, colors["white"])
+    click2 = font.render("or press any key to exit.", True, colors["white"])
     window.blit(win_txt, (window.get_width() / 2 - win_txt.get_width() / 2, 250))
     window.blit(click2, (window.get_width() / 2 - click2.get_width() / 2, 450))
     window.blit(click, (window.get_width() / 2 - click.get_width() / 2, 350))
@@ -259,7 +259,7 @@ def draw_win_screen():
 
 def draw_start_screen():
     window.fill((0, 0, 0))
-    click = font.render("Click anywhere to begin.", True, (255, 255, 255))
+    click = font.render("Click anywhere to begin.", True, colors["white"])
     window.blit(click, (window.get_width() / 2 - click.get_width() / 2, window.get_height()/2 - click.get_height()/2))
 
 
@@ -269,9 +269,9 @@ def draw_game_screen():
     # Draw board and grid
     pygame.draw.rect(window, (128, 128, 128), (board.set_location((650, 112)), board.dims))
     for x in range(board.location[0], board.location[0] + board.length + 1, 84):
-        pygame.draw.line(window, (255, 255, 255), (x, board.location[1]), (x, board.location[1] + board.length))
+        pygame.draw.line(window, colors["white"], (x, board.location[1]), (x, board.location[1] + board.length))
     for y in range(board.location[1], board.location[1] + board.dims[1] + 1, 84):
-        pygame.draw.line(window, (255, 255, 255), (board.location[0], y), (board.location[0] + board.width, y))
+        pygame.draw.line(window, colors["white"], (board.location[0], y), (board.location[0] + board.width, y))
     # Draw bomb menu item
     for b in bomb_list:
         b.draw_bomb()
