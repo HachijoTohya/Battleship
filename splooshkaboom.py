@@ -5,6 +5,7 @@ import sys
 pygame.init()
 # display window and clock
 window = pygame.display.set_mode((1600, 900))
+pygame.display.set_caption("Sploosh Kaboom")
 clock = pygame.time.Clock()
 font = pygame.font.SysFont("arial", 98, False, False)
 colors = {"red": (255, 0, 0), "green": (0, 255, 0), "blue": (0, 0, 255)}
