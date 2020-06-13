@@ -293,7 +293,6 @@ def main():
                     start.off()
                     playing.on()
             draw_start_screen()
-            pygame.display.update()
         # Game screen for playing game state
         elif playing.state:
             for event in pygame.event.get():
@@ -344,7 +343,6 @@ def main():
                 if playing.state:
                     pygame.event.clear()
                     draw_game_screen()
-                    pygame.display.update()
         # Switch game state into end game
         elif victory.state or lose.state:
             shots = 0
@@ -361,7 +359,7 @@ def main():
                     draw_win_screen()
                 elif lose.state:
                     draw_lose_screen()
-                pygame.display.update()
+        pygame.display.update()
 
 
 main()
