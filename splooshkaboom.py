@@ -102,6 +102,7 @@ class PlaySpace:
         self.shot = False
         self.miss = False
         self.hit = False
+        self.reveal = False
 
 
 spaces = [PlaySpace(label=xy) for xy in PlaySpace.space_labels]
