@@ -208,8 +208,6 @@ class PlaySpace:
         if self.reveal_win:
             pygame.draw.rect(window, (0, 255, 255), (hit_marker.set_location(self.coords), hit_marker.dims))
 
-
-
     def reset(self):
         self.is_occupied = False
         self.shot = False
