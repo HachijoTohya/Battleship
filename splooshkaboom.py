@@ -49,7 +49,7 @@ class GameState:
         draw_start_screen()
 
     def playing(self):
-        shots = len([shot_space for shot_space in spaces if shot_space.shot == True])
+        shots = len([shot_space for shot_space in spaces if shot_space.shot])
         for event in pygame.event.get():
             dead_squids = 0
             if event.type == pygame.QUIT:
@@ -64,8 +64,6 @@ class GameState:
                                 bomb_list[shots].shoot_bomb()
                             except IndexError:
                                 pass
-                            shots += 1
-                            print(shots)
                             if space.is_occupied:
                                 space.hit = True
                                 for squid in squids:
