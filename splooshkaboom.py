@@ -35,20 +35,83 @@ enemy_label = pygame.font.SysFont("arial", 100, False, False)
 # Game States
 class GameState:
     def __init__(self):
-        self.state = False
+        self.state = None
 
-    def on(self):
-        self.state = True
+    def set_state(self, state):
+        self.state = state
 
-    def off(self):
-        self.state = False
+    def start(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                self.state = "playing"
+        draw_start_screen()
+
+    def playing(self):
+        shots = len([shot_space for shot_space in spaces if shot_space.shot == True])
+        for event in pygame.event.get():
+            dead_squids = 0
+            if event.type == pygame.QUIT:
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pygame.event.clear()
+                for space in spaces:
+                    if space.space.collidepoint(pygame.mouse.get_pos()):
+                        if not space.shot:
+                            space.shot = True
+                            try:
+                                bomb_list[shots].shoot_bomb()
+                            except IndexError:
+                                pass
+                            shots += 1
+                            print(shots)
+                            if space.is_occupied:
+                                space.hit = True
+                                for squid in squids:
+                                    squid.kill()
+                            else:
+                                space.miss = True
+                            for squid in squids:
+                                if squid.is_dead:
+                                    dead_squids += 1
+                            # Check to see if game ended
+                            if dead_squids == 3:
+                                for squid in squids:
+                                    for space in squid.spawn_point:
+                                        space.reveal_win = True
+                                draw_game_screen()
+                                pygame.display.update()
+                                pygame.time.delay(2000)
+                                self.state = "win"
+                            elif shots > 23:
+                                for squid in squids:
+                                    for space in squid.spawn_point:
+                                        space.reveal_loss = True
+                                draw_game_screen()
+                                pygame.display.update()
+                                pygame.time.delay(2000)
+                                self.state = "lose"
+            if self.state == "playing":
+                pygame.event.clear()
+                draw_game_screen()
+
+    def win_lose(self, win_or_lose):
+        shots = 0
+        reset_game()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT or event.type == pygame.KEYDOWN:
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pygame.event.clear()
+                self.state = "playing"
+            if self.state == "win":
+                draw_win_screen()
+            elif self.state == "lose":
+                draw_lose_screen()
 
 
-start = GameState()
-playing = GameState()
-lose = GameState()
-victory = GameState()
-end_states = [victory, lose]
+state = GameState()
 
 
 # Game items
@@ -274,92 +337,25 @@ def reset_game():
     spawn_squids()
 
 
-def main():
-    shots = 0
+def main(game_state):
     pygame.event.set_allowed([pygame.MOUSEBUTTONDOWN, pygame.KEYDOWN, pygame.QUIT])
     spawn_squids()
-    start.on()
     for squid in squids:
         space_list = [space.label for space in squid.spawn_point]
         print(f"Squid {squid.size} coordinates: {space_list}")
     while True:
         clock.tick_busy_loop(144)
         # Start Screen Game State
-        if start.state:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    sys.exit()
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    start.off()
-                    playing.on()
-            draw_start_screen()
+        if game_state.state == "start":
+            game_state.start()
         # Game screen for playing game state
-        elif playing.state:
-            for event in pygame.event.get():
-                dead_squids = 0
-                if event.type == pygame.QUIT:
-                    sys.exit()
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    pygame.event.clear()
-                    for space in spaces:
-                        if space.space.collidepoint(pygame.mouse.get_pos()):
-                            if not space.shot:
-                                space.shot = True
-                                try:
-                                    bomb_list[shots].shoot_bomb()
-                                except IndexError:
-                                    pass
-                                shots += 1
-                                if space.is_occupied:
-                                    space.hit = True
-                                    for squid in squids:
-                                        squid.kill()
-                                else:
-                                    space.miss = True
-                                for squid in squids:
-                                    if squid.is_dead:
-                                        dead_squids += 1
-                                # Check to see if game ended
-                                if dead_squids == 3:
-                                    for squid in squids:
-                                        for space in squid.spawn_point:
-                                            space.reveal_win = True
-                                    draw_game_screen()
-                                    pygame.display.update()
-                                    pygame.time.delay(2000)
-                                    victory.on()
-                                    pygame.event.clear()
-                                    playing.off()
-                                elif shots > 23:
-                                    for squid in squids:
-                                        for space in squid.spawn_point:
-                                            space.reveal_loss = True
-                                    draw_game_screen()
-                                    pygame.display.update()
-                                    pygame.time.delay(2000)
-                                    lose.on()
-                                    pygame.event.clear()
-                                    playing.off()
-                if playing.state:
-                    pygame.event.clear()
-                    draw_game_screen()
+        elif game_state.state == "playing":
+            game_state.playing()
         # Switch game state into end game
-        elif victory.state or lose.state:
-            shots = 0
-            reset_game()
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT or event.type == pygame.KEYDOWN:
-                    sys.exit()
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    pygame.event.clear()
-                    for state in end_states:
-                        state.off()
-                        playing.on()
-                if victory.state:
-                    draw_win_screen()
-                elif lose.state:
-                    draw_lose_screen()
+        elif game_state.state == "lose" or game_state.state == "win":
+            game_state.win_lose(game_state)
         pygame.display.update()
 
 
-main()
+state.set_state("playing")
+main(state)
