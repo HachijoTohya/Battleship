@@ -137,6 +137,18 @@ class PlaySpace:
     def occupy_space(self):
         self.is_occupied = True
 
+    def mark_space(self):
+        if self.shot and self.hit:
+            pygame.draw.rect(window, (255, 69, 0), (hit_marker.set_location(self.coords), hit_marker.dims))
+        if self.shot and self.miss:
+            pygame.draw.rect(window, (0, 0, 255), (hit_marker.set_location(self.coords), hit_marker.dims))
+        if self.reveal_loss:
+            pygame.draw.rect(window, (255, 0, 255), (hit_marker.set_location(self.coords), hit_marker.dims))
+        if self.reveal_win:
+            pygame.draw.rect(window, (0, 255, 255), (hit_marker.set_location(self.coords), hit_marker.dims))
+
+
+
     def reset(self):
         self.is_occupied = False
         self.shot = False
@@ -205,17 +217,9 @@ def draw_game_screen():
     # Draw squid menu item and draw X if it died
     for y, squid in enumerate(squids):
         squid.draw_squid_icon(112+(262*y))
-    # Draw Marker if you clicked a space
+    # Draw Marker if you clicked a space and reveal spaces when game is over
     for space in spaces:
-        if space.shot and space.hit:
-            pygame.draw.rect(window, (255, 69, 0), (hit_marker.set_location(space.coords), hit_marker.dims))
-        if space.shot and space.miss:
-            pygame.draw.rect(window, (0, 0, 255), (hit_marker.set_location(space.coords), hit_marker.dims))
-    # Reveal rest of spaces
-        if space.reveal_loss:
-            pygame.draw.rect(window, (255, 0, 255), (hit_marker.set_location(space.coords), hit_marker.dims))
-        if space.reveal_win:
-            pygame.draw.rect(window, (0, 255, 255), (hit_marker.set_location(space.coords), hit_marker.dims))
+        space.mark_space()
 
 
 
@@ -305,7 +309,7 @@ def main():
                                 try:
                                     bomb_list[shots].shoot_bomb()
                                 except IndexError:
-                                    bomb_list[23].shoot_bomb()
+                                    pass
                                 shots += 1
                                 if space.is_occupied:
                                     space.hit = True
@@ -328,7 +332,7 @@ def main():
                                     win_state.switch_state()
                                     pygame.event.clear()
                                     playing.switch_state()
-                                elif shots == 24:
+                                elif shots > 23:
                                     for squid in squids:
                                         for space in squid.spawn_point:
                                             space.reveal_loss = True
