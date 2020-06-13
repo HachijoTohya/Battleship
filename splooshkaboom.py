@@ -60,8 +60,6 @@ class Bombs:
 
     def draw_bomb(self):
         pygame.draw.rect(window, colors["blue"], (self.location, bomb.dims))
-
-    def draw_x(self):
         if self.spent:
             pygame.draw.line(window, (255, 255, 255), self.location,
                              (self.location[0] + bomb.dims[0], self.location[1] + bomb.dims[1]))
@@ -70,6 +68,7 @@ class Bombs:
 
     def reset_bomb(self):
         self.spent = False
+
 
 bomb_coordinates = []
 for x in range(224, 449, 112):
@@ -192,8 +191,6 @@ def draw_game_screen():
     # Draw bomb menu item
     for b in bomb_list:
         b.draw_bomb()
-        if b.spent:
-            b.draw_x()
     # Draw squid menu item
     for y in range(112, 784, 262):
         pygame.draw.rect(window, (255, 0, 0), (enemies.set_location((1388, y)), enemies.dims))
