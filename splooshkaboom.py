@@ -92,7 +92,8 @@ class PlaySpace:
         self.shot = False
         self.miss = False
         self.hit = False
-        self.reveal = False
+        self.reveal_win = False
+        self.reveal_loss = False
 
     def occupy_space(self):
         self.is_occupied = True
@@ -102,7 +103,8 @@ class PlaySpace:
         self.shot = False
         self.miss = False
         self.hit = False
-        self.reveal = False
+        self.reveal_win = False
+        self.reveal_loss = False
 
 
 spaces = [PlaySpace(label=xy) for xy in PlaySpace.space_labels]
@@ -194,8 +196,11 @@ def draw_game_screen(shots):
         if space.shot and space.miss:
             pygame.draw.rect(window, (0, 0, 255), (hit_marker.set_location(space.coords), hit_marker.dims))
     # Reveal rest of spaces
-        if space.reveal:
+        if space.reveal_loss:
+            pygame.draw.rect(window, (255, 0, 255), (hit_marker.set_location(space.coords), hit_marker.dims))
+        if space.reveal_win:
             pygame.draw.rect(window, (0, 255, 255), (hit_marker.set_location(space.coords), hit_marker.dims))
+
 
 
 def spawn_squids():
@@ -270,6 +275,7 @@ def main():
         while playing.state:
             clock.tick_busy_loop(144)
             for event in pygame.event.get():
+                print(event)
                 dead_squids = 0
                 if event.type == pygame.QUIT:
                     sys.exit()
@@ -293,25 +299,26 @@ def main():
                                 if dead_squids == 3:
                                     for squid in squids:
                                         for space in squid.spawn_point:
-                                            space.reveal = True
+                                            space.reveal_win = True
                                     draw_game_screen(shots)
                                     pygame.display.update()
-                                    pygame.time.wait(2000)
                                     reset_game()
+                                    pygame.time.delay(2000)
                                     win_state.switch_state()
                                     pygame.event.clear()
                                     playing.switch_state()
                                 elif shots == 24:
                                     for squid in squids:
                                         for space in squid.spawn_point:
-                                            space.reveal = True
+                                            space.reveal_loss = True
                                     draw_game_screen(shots)
                                     pygame.display.update()
-                                    pygame.time.wait(2000)
                                     reset_game()
+                                    pygame.time.delay(2000)
                                     lose.switch_state()
                                     pygame.event.clear()
                                     playing.switch_state()
+            pygame.event.clear()
             draw_game_screen(shots)
             pygame.display.update()
             # game state for loss
