@@ -96,13 +96,13 @@ class GameState:
                 pygame.event.clear()
                 draw_game_screen()
 
-    def win_lose(self, win_or_lose):
-        reset_game()
+    def win_lose(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT or event.type == pygame.KEYDOWN:
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pygame.event.clear()
+                reset_game()
                 self.state = "playing"
             if self.state == "win":
                 draw_win_screen()
@@ -352,7 +352,7 @@ def main(game_state):
             game_state.playing()
         # Switch game state into end game
         elif game_state.state == "lose" or game_state.state == "win":
-            game_state.win_lose(game_state)
+            game_state.win_lose()
         pygame.display.update()
 
 
