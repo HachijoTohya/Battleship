@@ -331,6 +331,7 @@ def main():
                                     win_state.on()
                                     pygame.event.clear()
                                     playing.off()
+                                    break
                                 elif shots > 23:
                                     for squid in squids:
                                         for space in squid.spawn_point:
@@ -342,6 +343,7 @@ def main():
                                     lose.on()
                                     pygame.event.clear()
                                     playing.off()
+                                    break
             pygame.event.clear()
             draw_game_screen()
             pygame.display.update()
