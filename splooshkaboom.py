@@ -202,10 +202,9 @@ def draw_game_screen():
     # Draw bomb menu item
     for b in bomb_list:
         b.draw_bomb()
-    # Draw squid menu item
+    # Draw squid menu item and draw X if it died
     for y, squid in enumerate(squids):
         squid.draw_squid_icon(112+(262*y))
-    # Draw squid if it died
     # Draw Marker if you clicked a space
     for space in spaces:
         if space.shot and space.hit:
