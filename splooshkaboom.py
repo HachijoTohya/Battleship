@@ -92,6 +92,16 @@ class Squids:
         if points == self.size:
             self.is_dead = True
 
+    def draw_squid_icon(self, icon_location):
+        pygame.draw.rect(window, (255, 0, 0), (enemies.set_location((1388, icon_location)), enemies.dims))
+        window.blit(enemy_label.render(f"{self.size}", True, (255, 255, 255)),
+                    (enemies.location[0] + 25, enemies.location[1] - 6))
+        if self.is_dead:
+            pygame.draw.line(window, (255, 255, 255), enemies.location,
+                             (enemies.location[0] + enemies.dims[0], enemies.location[1] + enemies.dims[1]-1), 2)
+            pygame.draw.line(window, (255, 255, 255), (enemies.location[0] + enemies.dims[0], enemies.location[1]),
+                             (enemies.location[0], enemies.location[1] + enemies.dims[1]-1), 2)
+
     def can_spawn(self, conditions):
         if conditions == 4 + self.size:
             return True
@@ -193,19 +203,9 @@ def draw_game_screen():
     for b in bomb_list:
         b.draw_bomb()
     # Draw squid menu item
-    for y in range(112, 784, 262):
-        pygame.draw.rect(window, (255, 0, 0), (enemies.set_location((1388, y)), enemies.dims))
-        squid_items.append(enemies.location)
-    for num, squid in enumerate(squids):
-        window.blit(enemy_label.render(f"{squid.size}", True, (255, 255, 255)),
-                    (squid_items[num][0]+25, squid_items[num][1]-6))
+    for y, squid in enumerate(squids):
+        squid.draw_squid_icon(112+(262*y))
     # Draw squid if it died
-    for num, squid in enumerate(squids):
-        if squid.is_dead:
-            pygame.draw.line(window, (255, 255, 255), squid_items[num],
-                             (squid_items[num][0] + enemies.dims[0], squid_items[num][1] + enemies.dims[1]-1), 2)
-            pygame.draw.line(window, (255, 255, 255), (squid_items[num][0] + enemies.dims[0], squid_items[num][1]),
-                             (squid_items[num][0], squid_items[num][1] + enemies.dims[1]-1), 2)
     # Draw Marker if you clicked a space
     for space in spaces:
         if space.shot and space.hit:
@@ -354,7 +354,6 @@ def main():
                         pygame.event.clear()
                         playing.switch_state()
                         lose.switch_state()
-                draw_win_screen()
                 draw_lose_screen()
                 pygame.display.update()
             while win_state.state:
