@@ -283,9 +283,9 @@ def main():
         space_list = [space.label for space in squid.spawn_point]
         print(f"Squid {squid.size} coordinates: {space_list}")
     while True:
+        clock.tick_busy_loop(144)
         # Start Screen Game State
-        while start.state:
-            clock.tick_busy_loop(144)
+        if start.state:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit()
@@ -295,8 +295,7 @@ def main():
             draw_start_screen()
             pygame.display.update()
         # Game screen for playing game state
-        while playing.state:
-            clock.tick_busy_loop(144)
+        elif playing.state:
             for event in pygame.event.get():
                 dead_squids = 0
                 if event.type == pygame.QUIT:
@@ -328,31 +327,28 @@ def main():
                                             space.reveal_win = True
                                     draw_game_screen()
                                     pygame.display.update()
-                                    reset_game()
                                     pygame.time.delay(2000)
                                     victory.on()
                                     pygame.event.clear()
                                     playing.off()
-                                    break
                                 elif shots > 23:
                                     for squid in squids:
                                         for space in squid.spawn_point:
                                             space.reveal_loss = True
                                     draw_game_screen()
                                     pygame.display.update()
-                                    reset_game()
                                     pygame.time.delay(2000)
                                     lose.on()
                                     pygame.event.clear()
                                     playing.off()
-                                    break
-                pygame.event.clear()
-                draw_game_screen()
-                pygame.display.update()
+                if playing.state:
+                    pygame.event.clear()
+                    draw_game_screen()
+                    pygame.display.update()
         # Switch game state into end game
-        while victory.state or lose.state:
+        elif victory.state or lose.state:
             shots = 0
-            clock.tick_busy_loop(144)
+            reset_game()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT or event.type == pygame.KEYDOWN:
                     sys.exit()
