@@ -7,6 +7,7 @@ pygame.init()
 window = pygame.display.set_mode((1600, 900))
 clock = pygame.time.Clock()
 font = pygame.font.SysFont("arial", 98, False, False)
+colors = {"red": (255, 0, 0), "green": (0, 255, 0), "blue": (0, 0, 255)}
 
 
 # menu items
@@ -49,6 +50,34 @@ win_state = GameState()
 
 
 # Game items
+class Bombs:
+    def __init__(self, location):
+        self.location = location
+        self.spent = False
+
+    def shoot_bomb(self):
+        self.spent = True
+
+    def draw_bomb(self):
+        pygame.draw.rect(window, colors["blue"], (self.location, bomb.dims))
+
+    def draw_x(self):
+        if self.spent:
+            pygame.draw.line(window, (255, 255, 255), self.location,
+                             (self.location[0] + bomb.dims[0], self.location[1] + bomb.dims[1]))
+            pygame.draw.line(window, (255, 255, 255), (self.location[0] + bomb.dims[0], self.location[1]),
+                             (self.location[0], self.location[1] + bomb.dims[1]))
+
+    def reset_bomb(self):
+        self.spent = False
+
+bomb_coordinates = []
+for x in range(224, 449, 112):
+    for y in range(112, 701, 84):
+        bomb_coordinates.append((x, y))
+bomb_list = [Bombs(location=xy) for xy in bomb_coordinates]
+
+
 class Squids:
     def __init__(self, size):
         self.is_dead = False
@@ -153,9 +182,6 @@ def draw_start_screen():
 
 def draw_game_screen(shots):
     window.fill((0, 0, 0))
-    bomb_list = [(224, 112), (224, 196), (224, 280), (224, 364), (224, 448), (224, 532), (224, 616), (224, 700),
-                (336, 112), (336, 196), (336, 280), (336, 364), (336, 448), (336, 532), (336, 616), (336, 700),
-                (448, 112), (448, 196), (448, 280), (448, 364), (448, 448), (448, 532), (448, 616), (448, 700)]
     squid_items = []
     # Draw board and grid
     pygame.draw.rect(window, (128, 128, 128), (board.set_location((650, 112)), board.dims))
@@ -164,17 +190,10 @@ def draw_game_screen(shots):
     for y in range(board.location[1], board.location[1] + board.dims[1] + 1, 84):
         pygame.draw.line(window, (255, 255, 255), (board.location[0], y), (board.location[0] + board.width, y))
     # Draw bomb menu item
-    for xy in bomb_list:
-        pygame.draw.rect(window, (0, 0, 255), (bomb.set_location(xy), bomb.dims))
-    # Draw X on used Bombs
-    try:
-        for shot in range(shots):
-            pygame.draw.line(window, (255, 255, 255), bomb_list[shot],
-                             (bomb_list[shot][0] + bomb.dims[0], bomb_list[shot][1] + bomb.dims[1]))
-            pygame.draw.line(window, (255, 255, 255), (bomb_list[shot][0] + bomb.dims[0], bomb_list[shot][1]),
-                             (bomb_list[shot][0], bomb_list[shot][1] + bomb.dims[1]))
-    except IndexError:
-        pass
+    for b in bomb_list:
+        b.draw_bomb()
+        if b.spent:
+            b.draw_x()
     # Draw squid menu item
     for y in range(112, 784, 262):
         pygame.draw.rect(window, (255, 0, 0), (enemies.set_location((1388, y)), enemies.dims))
@@ -248,6 +267,8 @@ def reset_game():
         space.reset()
     for squid in squids:
         squid.reset_squid()
+    for b in bomb_list:
+        b.reset_bomb()
     spawn_squids()
 
 
@@ -275,7 +296,6 @@ def main():
         while playing.state:
             clock.tick_busy_loop(144)
             for event in pygame.event.get():
-                print(event)
                 dead_squids = 0
                 if event.type == pygame.QUIT:
                     sys.exit()
@@ -285,6 +305,10 @@ def main():
                         if space.space.collidepoint(pygame.mouse.get_pos()):
                             if not space.shot:
                                 space.shot = True
+                                try:
+                                    bomb_list[shots].shoot_bomb()
+                                except IndexError:
+                                    bomb_list[23].shoot_bomb()
                                 shots += 1
                                 if space.is_occupied:
                                     space.hit = True
