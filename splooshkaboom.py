@@ -180,7 +180,7 @@ def draw_start_screen():
     window.blit(click, (window.get_width() / 2 - click.get_width() / 2, window.get_height()/2 - click.get_height()/2))
 
 
-def draw_game_screen(shots):
+def draw_game_screen():
     window.fill((0, 0, 0))
     squid_items = []
     # Draw board and grid
@@ -324,7 +324,7 @@ def main():
                                     for squid in squids:
                                         for space in squid.spawn_point:
                                             space.reveal_win = True
-                                    draw_game_screen(shots)
+                                    draw_game_screen()
                                     pygame.display.update()
                                     reset_game()
                                     pygame.time.delay(2000)
@@ -335,7 +335,7 @@ def main():
                                     for squid in squids:
                                         for space in squid.spawn_point:
                                             space.reveal_loss = True
-                                    draw_game_screen(shots)
+                                    draw_game_screen()
                                     pygame.display.update()
                                     reset_game()
                                     pygame.time.delay(2000)
@@ -343,7 +343,7 @@ def main():
                                     pygame.event.clear()
                                     playing.switch_state()
             pygame.event.clear()
-            draw_game_screen(shots)
+            draw_game_screen()
             pygame.display.update()
             # game state for loss
             while lose.state:
