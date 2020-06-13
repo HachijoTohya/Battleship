@@ -37,11 +37,10 @@ class GameState:
     def __init__(self):
         self.state = False
 
-    def switch_state(self):
-        if not self.state:
-            self.state = True
-        elif self.state:
-            self.state = False
+    def on(self):
+        self.state = True
+    def off(self):
+        self.state = False
 
 
 start = GameState()
@@ -277,7 +276,7 @@ def main():
     shots = 0
     pygame.event.set_allowed([pygame.MOUSEBUTTONDOWN, pygame.KEYDOWN, pygame.QUIT])
     spawn_squids()
-    start.switch_state()
+    start.on()
     for squid in squids:
         space_list = [space.label for space in squid.spawn_point]
         print(f"Squid {squid.size} coordinates: {space_list}")
@@ -289,8 +288,8 @@ def main():
                 if event.type == pygame.QUIT:
                     sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    start.switch_state()
-                    playing.switch_state()
+                    start.off()
+                    playing.on()
             draw_start_screen()
             pygame.display.update()
         # Game screen for playing game state
@@ -329,9 +328,9 @@ def main():
                                     pygame.display.update()
                                     reset_game()
                                     pygame.time.delay(2000)
-                                    win_state.switch_state()
+                                    win_state.on()
                                     pygame.event.clear()
-                                    playing.switch_state()
+                                    playing.off()
                                 elif shots > 23:
                                     for squid in squids:
                                         for space in squid.spawn_point:
@@ -340,9 +339,9 @@ def main():
                                     pygame.display.update()
                                     reset_game()
                                     pygame.time.delay(2000)
-                                    lose.switch_state()
+                                    lose.on()
                                     pygame.event.clear()
-                                    playing.switch_state()
+                                    playing.off()
             pygame.event.clear()
             draw_game_screen()
             pygame.display.update()
@@ -355,8 +354,8 @@ def main():
                         sys.exit()
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         pygame.event.clear()
-                        playing.switch_state()
-                        lose.switch_state()
+                        playing.on()
+                        lose.off()
                 draw_lose_screen()
                 pygame.display.update()
             while win_state.state:
@@ -367,8 +366,8 @@ def main():
                         sys.exit()
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         pygame.event.clear()
-                        playing.switch_state()
-                        win_state.switch_state()
+                        playing.on()
+                        win_state.off()
                 draw_win_screen()
                 pygame.display.update()
 
