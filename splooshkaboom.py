@@ -60,6 +60,7 @@ class GameState:
                     if space.space.collidepoint(pygame.mouse.get_pos()):
                         if not space.shot:
                             space.shot = True
+                            print(shots)
                             try:
                                 bomb_list[shots].shoot_bomb()
                             except IndexError:
@@ -82,7 +83,7 @@ class GameState:
                                 pygame.display.update()
                                 pygame.time.delay(2000)
                                 self.state = "win"
-                            elif shots > 23:
+                            elif shots > 22:
                                 for squid in squids:
                                     for space in squid.spawn_point:
                                         space.reveal_loss = True
@@ -352,5 +353,5 @@ def main(game_state):
         pygame.display.update()
 
 
-state.set_state("playing")
+state.set_state("start")
 main(state)
