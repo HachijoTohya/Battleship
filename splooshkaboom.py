@@ -34,6 +34,7 @@ enemy_label = pygame.font.SysFont("arial", 100, False, False)
 
 # Game States
 class GameState:
+    test = ''
     def __init__(self):
         self.state = None
 
@@ -42,11 +43,26 @@ class GameState:
 
     def start(self):
         for event in pygame.event.get():
+            print(pygame.key.get_pressed()[pygame.K_BACKSPACE])
             if event.type == pygame.QUIT:
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 self.state = "playing"
-        draw_start_screen()
+            if event.type == pygame.KEYDOWN:
+                if len(pygame.key.name(event.key)) == 1 and event.mod & pygame.KMOD_SHIFT:
+                    self.test += pygame.key.name(event.key).upper()
+                elif len(pygame.key.name(event.key)) == 1:
+                    self.test += pygame.key.name(event.key)
+                if pygame.key.name(event.key) == "space":
+                    self.test += ' '
+                if pygame.key.get_pressed()[pygame.K_BACKSPACE]:
+                    s = [letter for letter in self.test]
+                    try:
+                        s.pop(len(s)-1)
+                    except:
+                        pass
+                    self.test = "".join(s)
+        draw_start_screen(self.test)
 
     def playing(self):
         shots = len([shot_space for shot_space in spaces if shot_space.shot])
@@ -74,23 +90,23 @@ class GameState:
                             for squid in squids:
                                 if squid.is_dead:
                                     dead_squids += 1
-                            # Check to see if game ended
-                            if dead_squids == 3:
-                                for squid in squids:
-                                    for space in squid.spawn_point:
-                                        space.reveal_win = True
-                                draw_game_screen()
-                                pygame.display.update()
-                                pygame.time.delay(2000)
-                                self.state = "win"
-                            elif shots > 22:
-                                for squid in squids:
-                                    for space in squid.spawn_point:
-                                        space.reveal_loss = True
-                                draw_game_screen()
-                                pygame.display.update()
-                                pygame.time.delay(2000)
-                                self.state = "lose"
+            # Check to see if game ended
+            if dead_squids == 3:
+                for squid in squids:
+                    for space in squid.spawn_point:
+                        space.reveal_win = True
+                draw_game_screen()
+                pygame.display.update()
+                pygame.time.delay(2000)
+                self.state = "win"
+            elif shots > 23:
+                for squid in squids:
+                    for space in squid.spawn_point:
+                        space.reveal_loss = True
+                draw_game_screen()
+                pygame.display.update()
+                pygame.time.delay(2000)
+                self.state = "lose"
             if self.state == "playing":
                 pygame.event.clear()
                 draw_game_screen()
@@ -256,15 +272,18 @@ def draw_win_screen():
     window.blit(click, (window.get_width() / 2 - click.get_width() / 2, 350))
 
 
-def draw_start_screen():
+def draw_start_screen(test):
     window.fill((0, 0, 0))
     click = font.render("Click anywhere to begin.", True, colors["white"])
+    strange = font.render(test, True, colors["white"])
     window.blit(click, (window.get_width() / 2 - click.get_width() / 2, window.get_height()/2 - click.get_height()/2))
+    window.blit(strange,
+                (window.get_width() / 2 - strange.get_width() / 2,
+                 (window.get_height()/2 - strange.get_height()/2) - strange.get_height()))
 
 
 def draw_game_screen():
     window.fill((0, 0, 0))
-    squid_items = []
     # Draw board and grid
     pygame.draw.rect(window, (128, 128, 128), (board.set_location((650, 112)), board.dims))
     for x in range(board.location[0], board.location[0] + board.length + 1, 84):
