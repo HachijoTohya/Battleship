@@ -43,26 +43,25 @@ class GameState:
 
     def start(self):
         for event in pygame.event.get():
-            print(pygame.key.get_pressed()[pygame.K_BACKSPACE])
             if event.type == pygame.QUIT:
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 self.state = "playing"
-            if event.type == pygame.KEYDOWN:
-                if len(pygame.key.name(event.key)) == 1 and event.mod & pygame.KMOD_SHIFT:
-                    self.test += pygame.key.name(event.key).upper()
-                elif len(pygame.key.name(event.key)) == 1:
-                    self.test += pygame.key.name(event.key)
-                if pygame.key.name(event.key) == "space":
-                    self.test += ' '
-                if pygame.key.get_pressed()[pygame.K_BACKSPACE]:
-                    s = [letter for letter in self.test]
-                    try:
-                        s.pop(len(s)-1)
-                    except:
-                        pass
-                    self.test = "".join(s)
-        draw_start_screen(self.test)
+            #if event.type == pygame.KEYDOWN:
+                #if len(pygame.key.name(event.key)) == 1 and event.mod & pygame.KMOD_SHIFT:
+                  #  self.test += pygame.key.name(event.key).upper()
+                #elif len(pygame.key.name(event.key)) == 1:
+                 #   self.test += pygame.key.name(event.key)
+                #if pygame.key.name(event.key) == "space":
+                 #   self.test += ' '
+                #if pygame.key.get_pressed()[pygame.K_BACKSPACE]:
+                 #   s = [letter for letter in self.test]
+                #    try:
+               #         s.pop(len(s)-1)
+              #      except:
+             #           pass
+             #       self.test = "".join(s)
+        draw_start_screen()
 
     def playing(self):
         shots = len([shot_space for shot_space in spaces if shot_space.shot])
@@ -76,7 +75,6 @@ class GameState:
                     if space.space.collidepoint(pygame.mouse.get_pos()):
                         if not space.shot:
                             space.shot = True
-                            print(shots)
                             try:
                                 bomb_list[shots].shoot_bomb()
                             except IndexError:
@@ -252,14 +250,19 @@ def scan(space, direction, distance):
 
 
 # Draws game
+def locate_element(locx, locy, element):
+    return (window.get_width() // locx - element.get_width() // locx,
+            window.get_height() // locy - element.get_height() // locy)
+
+
 def draw_lose_screen():
     window.fill((0, 0, 0))
     click = font.render("Click anywhere to play again", True, colors["white"])
     click2 = font.render("or press any key to exit.", True, colors["white"])
     loss_text = font.render("You Lose!", True, colors["white"])
-    window.blit(loss_text, (window.get_width()/2 - loss_text.get_width()/2, 250))
-    window.blit(click2, (window.get_width()/2 - click2.get_width()/2, 450))
-    window.blit(click, (window.get_width()/2 - click.get_width()/2, 350))
+    window.blit(loss_text, (locate_element(2, 6, loss_text)))
+    window.blit(click2, (locate_element(2, 7, click2)))
+    window.blit(click, (locate_element(2, 8, click)))
 
 
 def draw_win_screen():
@@ -272,14 +275,10 @@ def draw_win_screen():
     window.blit(click, (window.get_width() / 2 - click.get_width() / 2, 350))
 
 
-def draw_start_screen(test):
+def draw_start_screen():
     window.fill((0, 0, 0))
     click = font.render("Click anywhere to begin.", True, colors["white"])
-    strange = font.render(test, True, colors["white"])
     window.blit(click, (window.get_width() / 2 - click.get_width() / 2, window.get_height()/2 - click.get_height()/2))
-    window.blit(strange,
-                (window.get_width() / 2 - strange.get_width() / 2,
-                 (window.get_height()/2 - strange.get_height()/2) - strange.get_height()))
 
 
 def draw_game_screen():
